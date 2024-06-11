@@ -1,0 +1,33 @@
+{
+  "name": "dobby_backend_app",
+  "version": "1.0.0",
+  "description": "backend for the dobby app",
+  "main": "app.js",
+  "scripts": {
+    "build": "rimraf dist && npx tsc",
+    "prestart": "npm run build",
+    "start": "node dist/index.js --env-file .env",
+    "predev": "npm run build",
+    "dev": "concurrently \"npx tsc -w\" \"node --env-file .env --watch dist/app.js\""
+  },
+  "author": "angel anton",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
+    "mongoose": "^8.4.1",
+    "nodemailer": "^6.9.13",
+    "rimraf": "^5.0.7"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.2",
+    "@types/npm": "^7.19.3",
+    "typescript": "^5.4.5"
+  }
+}
