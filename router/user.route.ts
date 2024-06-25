@@ -14,6 +14,7 @@ import { checkEmailExist } from "../helpers/check-email-exist";
 import { checkUserIdExist } from "../helpers/check-user-id-exist";
 import { checkPage } from "../helpers/check-page";
 import { checkPageSize } from "../helpers/check-page-size";
+import { validateJwtMiddleware } from "../middlewares/validate-jwt.middleware";
 
 const userRouter = Router();
 
@@ -44,7 +45,7 @@ userRouter.post(
   login
 );
 
-userRouter.get("/me", me);
+userRouter.get("/me", [validateJwtMiddleware], me);
 
 userRouter.patch(
   "/:id",
@@ -70,8 +71,27 @@ userRouter.get(
   getStudents
 );
 
-userRouter.post("/:id/students", addStudent);
+userRouter.post(
+  "/:id/students",
+  [
+    check("id", "id is required").not().isEmpty(),
+    check("id", "not valid id").isMongoId(),
+    check("id").custom(checkUserIdExist),
+  ],
+  addStudent
+);
 
-userRouter.delete("/:id/students/:studentId", deleteStudent);
+userRouter.delete(
+  "/:id/students/:studentId",
+  [
+    check("id", "id is required").not().isEmpty(),
+    check("id", "not valid id").isMongoId(),
+    check("id").custom(checkUserIdExist),
+    check("studentId", "studentId is required").not().isEmpty(),
+    check("studentId", "not valid studentId").isMongoId(),
+    check("studentId").custom(checkUserIdExist),
+  ],
+  deleteStudent
+);
 
 export { userRouter };

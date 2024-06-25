@@ -1,4 +1,4 @@
 export interface UpdateUserDto {
-  name: String;
-  lastname: String;
+  name: string;
+  lastname: string;
 }

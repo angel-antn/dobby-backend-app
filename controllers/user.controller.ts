@@ -4,7 +4,9 @@ import bcryptjs from "bcrypt";
 import { UserRegisterDto } from "../dtos/user/user-register.dto";
 import { UserLoginDto } from "../dtos/user/user-login.dto";
 import { UpdateUserDto } from "../dtos/user/update-user.dto";
-import { paginationDto } from "../dtos/pagination/pagination-dto";
+import { paginationDto } from "../dtos/pagination/pagination.dto";
+import { generateJwt } from "../helpers/generate-jwt";
+import jwt from "jsonwebtoken";
 
 const register = async (
   req: Request<{}, {}, UserRegisterDto>,
@@ -19,12 +21,41 @@ const register = async (
 
   await user.save();
 
-  res.status(201).json(user);
+  res.status(200).json({
+    user,
+    token: generateJwt(user._id.toString()),
+  });
 };
 
-const login = (req: Request<{}, {}, UserLoginDto>, res: Response) => {};
+const login = async (req: Request<{}, {}, UserLoginDto>, res: Response) => {
+  const { email, password } = req.body;
 
-const me = (req: Request, res: Response) => {};
+  const user = await User.findOne({ email });
+
+  if (
+    !user ||
+    !user.isActive ||
+    !bcryptjs.compareSync(password, user.password)
+  ) {
+    return res.status(400).json({ msg: "not valid user or password" });
+  }
+
+  res.status(200).json({
+    user,
+    token: generateJwt(user._id.toString()),
+  });
+};
+
+const me = async (req: Request, res: Response) => {
+  const token = req.header("Authorization");
+  const payload = jwt.verify(token!, process.env.JWT_PASSWORD!);
+
+  const user = await User.findById((payload as jwt.JwtPayload).id);
+
+  return res
+    .status(200)
+    .json({ user, token: generateJwt(user!._id.toString()) });
+};
 
 const update = async (
   req: Request<{ id: string }, {}, UpdateUserDto>,
@@ -34,7 +65,9 @@ const update = async (
 
   const user = await User.findByIdAndUpdate(req.params.id, { name, lastname });
 
-  res.status(201).json(user);
+  const newUser = await User.findById(user?.id);
+
+  res.status(201).json({ ...newUser?.toJSON() });
 };
 
 const getStudents = async (
@@ -62,7 +95,7 @@ const getStudents = async (
       res.json(listOfStudents.slice(start, end));
     }
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ err });
   }
 };
 
@@ -84,7 +117,7 @@ const addStudent = async (
 
     return res.status(201).json(userStudent);
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ err });
   }
 };
 
@@ -104,9 +137,9 @@ const deleteStudent = async (
       user.save();
     }
 
-    return res.status(200);
+    return res.status(200).json();
   } catch (err) {
-    res.status(500).send(err);
+    res.status(500).json({ err });
   }
 };
 
