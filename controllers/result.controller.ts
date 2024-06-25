@@ -36,7 +36,12 @@ const getResults = async (
       .skip((Number(page) - 1) * Number(pageSize))
       .limit(Number(pageSize));
 
-    res.json(results);
+    res.json({
+      data: results,
+      maxPage: Math.ceil(
+        (await Result.find({ userId }).countDocuments()) / Number(pageSize)
+      ),
+    });
   } catch (err) {
     res.status(500).json({ err });
   }

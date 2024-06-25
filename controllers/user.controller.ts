@@ -92,7 +92,10 @@ const getStudents = async (
       const start = (Number(page) - 1) * Number(pageSize);
       const end = Number(start) + Number(pageSize);
 
-      res.json(listOfStudents.slice(start, end));
+      res.json({
+        data: listOfStudents.slice(start, end),
+        maxPage: Math.ceil(user.students.length / Number(pageSize)),
+      });
     }
   } catch (err) {
     res.status(500).json({ err });
