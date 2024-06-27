@@ -108,13 +108,13 @@ const addStudent = async (
 ) => {
   try {
     const user = await User.findById(req.params.id);
-    const userStudent = await User.findById(req.params.studentId);
+    const userStudent = await User.findById(req.body.studentId);
 
     if (!user || !userStudent)
       return res.status(400).json({ msg: "userId doesn't exist" });
 
-    if (!user.students.includes(user._id.toString())) {
-      user.students.push(user._id.toString());
+    if (!user.students.includes(userStudent._id.toString())) {
+      user.students.push(userStudent._id.toString());
       user.save();
     }
 
@@ -133,12 +133,10 @@ const deleteStudent = async (
 
     if (!user) return res.status(400).json({ msg: "userId doesn't exist" });
 
-    if (!user.students.includes(user._id.toString())) {
-      user.students = user.students.filter((student) => {
-        return student !== req.params.studentId;
-      });
-      user.save();
-    }
+    user.students = user.students.filter((student) => {
+      return student !== req.params.studentId;
+    });
+    user.save();
 
     return res.status(200).json();
   } catch (err) {

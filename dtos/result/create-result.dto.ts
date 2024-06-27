@@ -3,4 +3,5 @@ export interface CreateResultDto {
   questionsCount: number;
   questionsQty: number;
   userId: string;
+  level: string;
 }

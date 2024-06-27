@@ -6,6 +6,7 @@ const resultSchema = new Schema({
   createdAt: { type: String, required: true },
   questionsCount: { type: Number, required: true },
   questionsQty: { type: Number, required: true },
+  level: { type: String, required: true },
 });
 
 resultSchema.methods.toJSON = function () {

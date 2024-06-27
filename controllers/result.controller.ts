@@ -4,7 +4,7 @@ import { paginationDto } from "../dtos/pagination/pagination.dto";
 import Result from "../models/result";
 
 const create = async (req: Request<{}, {}, CreateResultDto>, res: Response) => {
-  const { details, questionsCount, questionsQty, userId } = req.body;
+  const { details, questionsCount, questionsQty, userId, level } = req.body;
 
   const createdAt = new Date();
 
@@ -14,6 +14,7 @@ const create = async (req: Request<{}, {}, CreateResultDto>, res: Response) => {
     details,
     questionsCount,
     questionsQty,
+    level,
   });
 
   await result.save();
@@ -32,12 +33,14 @@ const getResults = async (
     const userId = req.params.userId;
 
     const results = await Result.find({ userId })
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: 1 })
       .skip((Number(page) - 1) * Number(pageSize))
       .limit(Number(pageSize));
 
+    const reversedResults = results.reverse();
+
     res.json({
-      data: results,
+      data: reversedResults,
       maxPage: Math.ceil(
         (await Result.find({ userId }).countDocuments()) / Number(pageSize)
       ),

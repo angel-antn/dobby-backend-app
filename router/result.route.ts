@@ -14,6 +14,7 @@ resultRouter.post(
     check("userId", "userID is required").not().isEmpty(),
     check("details", "details is required").not().isEmpty(),
     check("questionsQty", "questions qty is required").not().isEmpty(),
+    check("level", "level is required").not().isEmpty(),
     check("questionsCount", "questions count is required").not().isEmpty(),
     validateFieldsMiddleware,
   ],
