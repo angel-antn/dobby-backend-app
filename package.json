@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf dist && npx tsc",
     "prestart": "npm run build",
-    "start": "node dist/index.js --env-file .env",
+    "start": "node dist/app.js --env-file .env",
     "predev": "npm run build",
     "dev": "concurrently \"npx tsc -w\" \"node --env-file .env --watch dist/app.js\""
   },
